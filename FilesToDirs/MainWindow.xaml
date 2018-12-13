@@ -8,7 +8,10 @@
         Title="MainWindow" Height="450" Width="800">
     <StackPanel>
         <Label Content="Source"/>
-        <Button x:Name="SelectSourceButton" Content="Select source" Width="150" HorizontalAlignment="Left" Click="SelectSourceButton_Click"/>
+        <StackPanel Orientation="Horizontal">
+            <Button x:Name="SelectSourceButton" Content="Select source" Width="150" HorizontalAlignment="Left" Click="SelectSourceButton_Click"/>
+            <Label x:Name="Path"/>
+        </StackPanel>
         <Label Content="Destination"/>
     </StackPanel>
 </Window>

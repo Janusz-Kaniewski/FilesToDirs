@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Forms;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Documents;
@@ -24,7 +25,12 @@ namespace FilesToDirs
 
         private void SelectSourceButton_Click(object sender, RoutedEventArgs e)
         {
-
+            FolderBrowserDialog dialog = new FolderBrowserDialog();
+            DialogResult result = dialog.ShowDialog();
+            if(result == System.Windows.Forms.DialogResult.OK)
+            {
+                Path.Content = dialog.SelectedPath;
+            }
         }
     }
 }

@@ -13,11 +13,16 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using FilesToDirs.Models;
+using System.IO;
 
 namespace FilesToDirs
 {
     public partial class MainWindow : Window
     {
+        string sourcePath;
+        string destinationPath;
+
         public MainWindow()
         {
             InitializeComponent();
@@ -26,11 +31,69 @@ namespace FilesToDirs
         private void SelectSourceButton_Click(object sender, RoutedEventArgs e)
         {
             FolderBrowserDialog dialog = new FolderBrowserDialog();
+            dialog.Description = "Select folder where are files you want to organize.";
             DialogResult result = dialog.ShowDialog();
             if(result == System.Windows.Forms.DialogResult.OK)
             {
-                Path.Content = dialog.SelectedPath;
+                SourcePath.Content = sourcePath = dialog.SelectedPath;
             }
+        }
+
+        private void SelectDestinationButton_Click(object sender, RoutedEventArgs e)
+        {
+            FolderBrowserDialog dialog = new FolderBrowserDialog();
+            dialog.Description = "Select destination folder where organized files will be stored.";
+            DialogResult result = dialog.ShowDialog();
+            if (result == System.Windows.Forms.DialogResult.OK)
+            {
+                DestinationPath.Content = destinationPath = dialog.SelectedPath;
+            }
+        }
+
+        private void OrganizeButton_Click(object sender, RoutedEventArgs e)
+        {
+            List<FileModel> files = new List<FileModel>();
+            List<string> paths = new List<string>();
+            List<string> extensions = new List<string>();
+
+            paths = Directory.EnumerateFiles(sourcePath, "*", SearchOption.AllDirectories).ToList();
+
+            foreach (var p in paths)
+            {
+                FileInfo file = new FileInfo(p);
+                files.Add(new FileModel { Name = file.Name, Path = p, Extension = file.Extension.Substring(1, file.Extension.Length - 1).ToUpper() });
+            }
+
+            extensions = files.GroupBy(a => a.Extension).Select(x => x.Key).ToList();
+
+            LogText.AppendText("Extensions found:\n");
+
+            foreach(var ext in extensions)
+            {
+                LogText.AppendText(ext + "\n");
+            }
+
+            LogText.AppendText("---------------------------\n");
+
+            foreach(var ext in extensions)
+            {
+                string dirPath = destinationPath + @"\" + ext;
+                Directory.CreateDirectory(dirPath);
+                LogText.AppendText("Directory created in " + dirPath + "\n");
+            }
+
+            LogText.AppendText("---------------------------\n");
+
+            foreach (var f in files)
+            {
+                FileInfo file = new FileInfo(f.Path);
+                string copyToPath = destinationPath + @"\" + f.Extension + @"\" + f.Name;
+                file.CopyTo(copyToPath);
+                LogText.AppendText("Copied file " + f.Path + " to " + copyToPath + "\n");
+            }
+
+            LogText.AppendText("---------------------------\n");
+            LogText.AppendText("All files copied successfully\n");
         }
     }
 }

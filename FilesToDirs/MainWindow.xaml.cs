@@ -50,7 +50,12 @@ namespace FilesToDirs
             }
         }
 
-        private void OrganizeButton_Click(object sender, RoutedEventArgs e)
+        private async void OrganizeButton_Click(object sender, RoutedEventArgs e)
+        {
+            await CopyFilesAsync();
+        }
+
+        public async Task CopyFilesAsync()
         {
             List<FileModel> files = new List<FileModel>();
             List<string> paths = new List<string>();
@@ -68,14 +73,14 @@ namespace FilesToDirs
 
             LogText.AppendText("Extensions found:\n");
 
-            foreach(var ext in extensions)
+            foreach (var ext in extensions)
             {
                 LogText.AppendText(ext + "\n");
             }
 
             LogText.AppendText("---------------------------\n");
 
-            foreach(var ext in extensions)
+            foreach (var ext in extensions)
             {
                 string dirPath = destinationPath + @"\" + ext;
                 Directory.CreateDirectory(dirPath);
@@ -86,10 +91,15 @@ namespace FilesToDirs
 
             foreach (var f in files)
             {
-                FileInfo file = new FileInfo(f.Path);
                 string copyToPath = destinationPath + @"\" + f.Extension + @"\" + f.Name;
-                file.CopyTo(copyToPath);
+
+                FileStream source = File.Open(f.Path, FileMode.Open);
+                FileStream destination = File.Create(copyToPath);
+
+                await source.CopyToAsync(destination);
+
                 LogText.AppendText("Copied file " + f.Path + " to " + copyToPath + "\n");
+                LogText.ScrollToEnd();
             }
 
             LogText.AppendText("---------------------------\n");

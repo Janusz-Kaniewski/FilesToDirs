@@ -19,5 +19,6 @@
         </StackPanel>
         <Button x:Name="OrganizeButton" Content="Organize" Width="150" HorizontalAlignment="Left" Click="OrganizeButton_Click"/>
         <TextBox x:Name="LogText" Height="250" ScrollViewer.HorizontalScrollBarVisibility="Auto" ScrollViewer.VerticalScrollBarVisibility="Auto"/>
+        <Label x:Name="StatusLabel" Content=""/>
     </StackPanel>
 </Window>

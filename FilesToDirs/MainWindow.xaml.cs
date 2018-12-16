@@ -26,6 +26,7 @@ namespace FilesToDirs
         public MainWindow()
         {
             InitializeComponent();
+            StatusLabel.Content = "Ready";
         }
 
         private void SelectSourceButton_Click(object sender, RoutedEventArgs e)
@@ -62,6 +63,8 @@ namespace FilesToDirs
             List<string> extensions = new List<string>();
 
             paths = Directory.EnumerateFiles(sourcePath, "*", SearchOption.AllDirectories).ToList();
+            int total = paths.Count;
+            int count = 0;
 
             foreach (var p in paths)
             {
@@ -96,9 +99,11 @@ namespace FilesToDirs
                 FileStream source = File.Open(f.Path, FileMode.Open);
                 FileStream destination = File.Create(copyToPath);
 
+                LogText.AppendText("Copying file " + f.Path + "...\n");
                 await source.CopyToAsync(destination);
-
                 LogText.AppendText("Copied file " + f.Path + " to " + copyToPath + "\n");
+                count++;
+                StatusLabel.Content = "Copied " + count + " of " + total + " files";
                 LogText.ScrollToEnd();
             }
 

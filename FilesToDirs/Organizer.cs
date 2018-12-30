@@ -20,7 +20,7 @@ namespace FilesToDirs
 
             MainWindow.SelectSourceButton.IsEnabled = false;
             MainWindow.SelectDestinationButton.IsEnabled = false;
-            MainWindow.OrganizeButton.IsEnabled = false;
+            MainWindow.PercentLabel.Visibility = System.Windows.Visibility.Visible;
             MainWindow.Progress.Visibility = System.Windows.Visibility.Visible;
 
             paths = Directory.EnumerateFiles(sourcePath, "*", SearchOption.AllDirectories).ToList();
@@ -55,28 +55,49 @@ namespace FilesToDirs
 
             foreach (var f in files)
             {
-                string copyToPath = destinationPath + @"\" + f.Extension + @"\" + f.Name;
+                if (!MainWindow.IsCancelled)
+                {
+                    string copyToPath = destinationPath + @"\" + f.Extension + @"\" + f.Name;
 
-                FileStream source = File.Open(f.Path, FileMode.Open);
-                FileStream destination = File.Create(copyToPath);
+                    FileStream source = File.Open(f.Path, FileMode.Open);
+                    FileStream destination = File.Create(copyToPath);
 
-                MainWindow.LogText.AppendText("Copying file " + f.Path + "...\n");
-                await source.CopyToAsync(destination);
-                MainWindow.LogText.AppendText("Copied file " + f.Path + " to " + copyToPath + "\n");
-                count++;
-                MainWindow.StatusLabel.Content = "Copied " + count + " of " + total + " files";
-                var percent = Convert.ToDouble(count) / Convert.ToDouble(total) * 100;
-                MainWindow.LogText.ScrollToEnd();
-                ((IProgress<double>)progress).Report(percent);
-                MainWindow.PercentLabel.Content = Convert.ToInt32(percent) + "%";
+                    MainWindow.LogText.AppendText("Copying file " + f.Path + "...\n");
+                    await source.CopyToAsync(destination);
+                    MainWindow.LogText.AppendText("Copied file " + f.Path + " to " + copyToPath + "\n");
+                    count++;
+                    MainWindow.StatusLabel.Content = "Copied " + count + " of " + total + " files";
+                    var percent = Convert.ToDouble(count) / Convert.ToDouble(total) * 100;
+                    MainWindow.LogText.ScrollToEnd();
+                    ((IProgress<double>)progress).Report(percent);
+                    MainWindow.PercentLabel.Content = Convert.ToInt32(percent) + "%";
+                    source.Close();
+                    destination.Close();
+                }
             }
 
             MainWindow.LogText.AppendText("---------------------------\n");
-            MainWindow.LogText.AppendText("All files copied successfully\n");
+
+            if(MainWindow.IsCancelled)
+            {
+                MainWindow.LogText.AppendText("Process aborted by user.\nCopied " + count + " of " + total + " files\n");
+                MainWindow.Progress.Visibility = System.Windows.Visibility.Hidden;
+                MainWindow.PercentLabel.Visibility = System.Windows.Visibility.Hidden;
+            }
+            else
+            {
+                MainWindow.LogText.AppendText("All files copied successfully\n");
+            }
+
 
             MainWindow.SelectSourceButton.IsEnabled = true;
             MainWindow.SelectDestinationButton.IsEnabled = true;
+
+            MainWindow.OrganizeButton.Content = "Organize";
+            MainWindow.OrganizeButton.Click += MainWindow.OrganizeButton_Click;
+            MainWindow.OrganizeButton.Click -= MainWindow.Cancel_Click;
             MainWindow.OrganizeButton.IsEnabled = true;
+            MainWindow.IsCancelled = false;
         }
     }
 }

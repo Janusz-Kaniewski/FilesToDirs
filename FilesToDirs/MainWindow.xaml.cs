@@ -15,11 +15,14 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using FilesToDirs.Models;
 using System.IO;
+using System.Windows.Shell;
+using System.Threading;
 
 namespace FilesToDirs
 {
     public partial class MainWindow : Window
     {
+        public static bool IsCancelled = false;
         public static System.Windows.Controls.Label StatusLabel = new System.Windows.Controls.Label { Content = "Ready" };
         public static System.Windows.Controls.TextBox LogText = new System.Windows.Controls.TextBox { Height = 200, HorizontalScrollBarVisibility = ScrollBarVisibility.Auto, VerticalScrollBarVisibility = ScrollBarVisibility.Auto, Margin = new Thickness(0, 10, 0, 0) };
         public static System.Windows.Controls.ProgressBar Progress = new System.Windows.Controls.ProgressBar { Height = 10, Margin = new Thickness(0, 10, 0, 0), Minimum = 0, Maximum = 100, Width = 725, Visibility = Visibility.Hidden };
@@ -30,13 +33,12 @@ namespace FilesToDirs
         private System.Windows.Controls.Label SourcePath = new System.Windows.Controls.Label { Content = "", Margin = new Thickness(10, 0, 0, 0) };
         private System.Windows.Controls.Label DestinationPath = new System.Windows.Controls.Label { Content = "", Margin = new Thickness(10, 0, 0, 0) };
 
-        string sourcePath;
-        string destinationPath;
+        static string sourcePath;
+        static string destinationPath;
 
         public MainWindow()
         {
             InitializeComponent();
-
             StackPanel stack = new StackPanel {Margin = new Thickness(10, 10, 10, 10) };
             StackPanel sourceStack = new StackPanel { Orientation = System.Windows.Controls.Orientation.Horizontal };
             StackPanel destinationStack = new StackPanel { Orientation = System.Windows.Controls.Orientation.Horizontal };
@@ -91,9 +93,19 @@ namespace FilesToDirs
             }
         }
 
-        private async void OrganizeButton_Click(object sender, RoutedEventArgs e)
+        public static async void OrganizeButton_Click(object sender, RoutedEventArgs e)
         {
+            OrganizeButton.Content = "Cancel";
+            OrganizeButton.Click -= OrganizeButton_Click;
+            OrganizeButton.Click += Cancel_Click;
             await Organizer.CopyFilesByExtensionAsync(sourcePath, destinationPath);
+        }
+
+        public static void Cancel_Click(object sender, RoutedEventArgs e)
+        {
+            IsCancelled = true;
+            OrganizeButton.IsEnabled = false;
+            OrganizeButton.Content = "Canceling...";
         }
     }
 }

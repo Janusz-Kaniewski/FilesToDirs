@@ -20,13 +20,48 @@ namespace FilesToDirs
 {
     public partial class MainWindow : Window
     {
+        public static System.Windows.Controls.Label StatusLabel = new System.Windows.Controls.Label { Content = "Ready" };
+        public static System.Windows.Controls.TextBox LogText = new System.Windows.Controls.TextBox { Height = 200, HorizontalScrollBarVisibility = ScrollBarVisibility.Auto, VerticalScrollBarVisibility = ScrollBarVisibility.Auto, Margin = new Thickness(0, 10, 0, 0)};
+        public static System.Windows.Controls.ProgressBar Progress = new System.Windows.Controls.ProgressBar { Height = 10, Margin = new Thickness(0, 10, 0, 0), Minimum = 0, Maximum = 100 };
+        public static System.Windows.Controls.Button SelectSourceButton = new System.Windows.Controls.Button { Content = "Select source", Height = 20, Width = 150 };
+        public static System.Windows.Controls.Button SelectDestinationButton = new System.Windows.Controls.Button { Content = "Select destination", Height = 20, Width = 150 };
+        public static System.Windows.Controls.Button OrganizeButton = new System.Windows.Controls.Button { Content = "Organize", Height = 20, Width = 150, HorizontalAlignment = System.Windows.HorizontalAlignment.Left, Margin = new Thickness(0, 10, 0, 0) };
+        private System.Windows.Controls.Label SourcePath = new System.Windows.Controls.Label { Content = "", Margin = new Thickness(10, 0, 0, 0) };
+        private System.Windows.Controls.Label DestinationPath = new System.Windows.Controls.Label { Content = "", Margin = new Thickness(10, 0, 0, 0) };
+
         string sourcePath;
         string destinationPath;
 
         public MainWindow()
         {
             InitializeComponent();
-            StatusLabel.Content = "Ready";
+
+            StackPanel stack = new StackPanel {Margin = new Thickness(10, 10, 10, 10) };
+            StackPanel sourceStack = new StackPanel { Orientation = System.Windows.Controls.Orientation.Horizontal };
+            StackPanel destinationStack = new StackPanel { Orientation = System.Windows.Controls.Orientation.Horizontal };
+
+            SelectSourceButton.Click += SelectSourceButton_Click;
+            SelectDestinationButton.Click += SelectDestinationButton_Click;
+            OrganizeButton.Click += OrganizeButton_Click;
+
+            stack.Children.Add(new System.Windows.Controls.Label { Content = "Source" });
+
+            sourceStack.Children.Add(SelectSourceButton);
+            sourceStack.Children.Add(SourcePath);
+            stack.Children.Add(sourceStack);
+
+            stack.Children.Add(new System.Windows.Controls.Label { Content = "Destination" });
+
+            destinationStack.Children.Add(SelectDestinationButton);
+            destinationStack.Children.Add(DestinationPath);
+            stack.Children.Add(destinationStack);
+
+            stack.Children.Add(Progress);
+            stack.Children.Add(LogText);
+            stack.Children.Add(OrganizeButton);
+            stack.Children.Add(StatusLabel);
+
+            Content = stack;            
         }
 
         private void SelectSourceButton_Click(object sender, RoutedEventArgs e)
@@ -53,7 +88,7 @@ namespace FilesToDirs
 
         private async void OrganizeButton_Click(object sender, RoutedEventArgs e)
         {
-            await CopyFilesAsync();
+            await Organizer.CopyFilesByExtensionAsync(sourcePath, destinationPath);
         }
 
         public async Task CopyFilesAsync()

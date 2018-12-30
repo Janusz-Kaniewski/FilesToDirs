@@ -5,20 +5,5 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:FilesToDirs"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
-    <StackPanel>
-        <Label Content="Source"/>
-        <StackPanel Orientation="Horizontal">
-            <Button x:Name="SelectSourceButton" Content="Select source" Width="150" HorizontalAlignment="Left" Click="SelectSourceButton_Click"/>
-            <Label x:Name="SourcePath"/>
-        </StackPanel>
-        <Label Content="Destination"/>
-        <StackPanel Orientation="Horizontal">
-            <Button x:Name="SelectDestinationButton" Content="Select destination" Width="150" HorizontalAlignment="Left" Click="SelectDestinationButton_Click"/>
-            <Label x:Name="DestinationPath"/>
-        </StackPanel>
-        <Button x:Name="OrganizeButton" Content="Organize" Width="150" HorizontalAlignment="Left" Click="OrganizeButton_Click"/>
-        <TextBox x:Name="LogText" Height="250" ScrollViewer.HorizontalScrollBarVisibility="Auto" ScrollViewer.VerticalScrollBarVisibility="Auto"/>
-        <Label x:Name="StatusLabel" Content=""/>
-    </StackPanel>
+        Title="FilesToDirs - File organizer" Height="450" Width="800">
 </Window>

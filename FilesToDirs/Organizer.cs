@@ -12,6 +12,8 @@ namespace FilesToDirs
     {
         public static async Task CopyFilesByExtensionAsync(string sourcePath, string destinationPath)
         {
+            var progress = new Progress<double>(value => MainWindow.Progress.Value = value);
+
             List<FileModel> files = new List<FileModel>();
             List<string> paths = new List<string>();
             List<string> extensions = new List<string>();
@@ -19,6 +21,7 @@ namespace FilesToDirs
             MainWindow.SelectSourceButton.IsEnabled = false;
             MainWindow.SelectDestinationButton.IsEnabled = false;
             MainWindow.OrganizeButton.IsEnabled = false;
+            MainWindow.Progress.Visibility = System.Windows.Visibility.Visible;
 
             paths = Directory.EnumerateFiles(sourcePath, "*", SearchOption.AllDirectories).ToList();
             int total = paths.Count;
@@ -62,9 +65,10 @@ namespace FilesToDirs
                 MainWindow.LogText.AppendText("Copied file " + f.Path + " to " + copyToPath + "\n");
                 count++;
                 MainWindow.StatusLabel.Content = "Copied " + count + " of " + total + " files";
-                var percent = (count / total) * 100;
-                MainWindow.Progress.Value = percent;
+                var percent = Convert.ToDouble(count) / Convert.ToDouble(total) * 100;
                 MainWindow.LogText.ScrollToEnd();
+                ((IProgress<double>)progress).Report(percent);
+                MainWindow.PercentLabel.Content = Convert.ToInt32(percent) + "%";
             }
 
             MainWindow.LogText.AppendText("---------------------------\n");

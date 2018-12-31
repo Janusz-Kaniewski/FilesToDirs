@@ -32,13 +32,21 @@ namespace FilesToDirs
         public static System.Windows.Controls.Button OrganizeButton = new System.Windows.Controls.Button { Content = "Organize", Height = 20, Width = 150, HorizontalAlignment = System.Windows.HorizontalAlignment.Left, Margin = new Thickness(0, 10, 0, 0) };
         private System.Windows.Controls.Label SourcePath = new System.Windows.Controls.Label { Content = "", Margin = new Thickness(10, 0, 0, 0) };
         private System.Windows.Controls.Label DestinationPath = new System.Windows.Controls.Label { Content = "", Margin = new Thickness(10, 0, 0, 0) };
-
+        private static Dictionary<string, string> whatType = new Dictionary<string, string>();
         static string sourcePath;
         static string destinationPath;
 
         public MainWindow()
         {
             InitializeComponent();
+
+            whatType.Add("JPG", "Obrazy");
+            whatType.Add("PNG", "Obrazy");
+            whatType.Add("GIF", "Obrazy");
+            whatType.Add("M4A", "Dźwięki");
+            whatType.Add("MOV", "Filmy");
+            whatType.Add("MP4", "Filmy");
+
             StackPanel stack = new StackPanel {Margin = new Thickness(10, 10, 10, 10) };
             StackPanel sourceStack = new StackPanel { Orientation = System.Windows.Controls.Orientation.Horizontal };
             StackPanel destinationStack = new StackPanel { Orientation = System.Windows.Controls.Orientation.Horizontal };
@@ -68,7 +76,7 @@ namespace FilesToDirs
             stack.Children.Add(OrganizeButton);
             stack.Children.Add(StatusLabel);
 
-            Content = stack;            
+            Content = stack;     
         }
 
         private void SelectSourceButton_Click(object sender, RoutedEventArgs e)
@@ -98,7 +106,8 @@ namespace FilesToDirs
             OrganizeButton.Content = "Cancel";
             OrganizeButton.Click -= OrganizeButton_Click;
             OrganizeButton.Click += Cancel_Click;
-            await Organizer.CopyFilesByExtensionAsync(sourcePath, destinationPath);
+            //await Organizer.CopyFilesByExtensionAsync(sourcePath, destinationPath, true);
+            await Organizer.CopyFilesByTypeAsync(sourcePath, destinationPath, whatType, true);
         }
 
         public static void Cancel_Click(object sender, RoutedEventArgs e)
